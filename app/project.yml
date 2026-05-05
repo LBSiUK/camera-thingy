@@ -1,0 +1,31 @@
+name: RemoteCamera
+options:
+  bundleIdPrefix: com.leonb
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15"
+
+targets:
+  RemoteCamera:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: RemoteCamera
+    info:
+      path: RemoteCamera/Info.plist
+      properties:
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSCameraUsageDescription: "Take photos on command — remotely or via the shutter button."
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.leonb.remotecamera
+      SWIFT_VERSION: "5.9"
+      TARGETED_DEVICE_FAMILY: "1"
+      ENABLE_PREVIEWS: "YES"
+      DEVELOPMENT_TEAM: C283APJCB8
+      CODE_SIGN_STYLE: Automatic
+      CODE_SIGN_IDENTITY: "Apple Development"

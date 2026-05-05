@@ -1,0 +1,15 @@
+# Node
+server/node_modules/
+server/photos/
+
+# iOS build artifacts
+app/build/
+app/RemoteCamera.xcodeproj/xcuserdata/
+app/RemoteCamera.xcodeproj/project.xcworkspace/xcuserdata/
+
+# macOS
+.DS_Store
+
+# Xcode derived data
+DerivedData/
+*.xcuserstate

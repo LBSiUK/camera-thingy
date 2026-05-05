@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Remote Camera — Test Client</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --border: #2a2a2a;
+      --text: #e8e8e8;
+      --muted: #666;
+      --green: #4ade80;
+      --red: #f87171;
+      --yellow: #fbbf24;
+      --blue: #60a5fa;
+      --purple: #a78bfa;
+    }
+
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 13px; }
+
+    header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    h1 { font-size: 1rem; font-weight: 600; white-space: nowrap; }
+
+    .url-row { display: flex; gap: 0.5rem; flex: 1; min-width: 200px; }
+    .url-row input { flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 0.4rem 0.7rem; font-size: 13px; font-family: monospace; }
+    .url-row input:focus { outline: 1px solid var(--blue); }
+
+    button { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 0.4rem 0.9rem; cursor: pointer; font-size: 13px; white-space: nowrap; transition: background 0.1s; }
+    button:hover:not(:disabled) { background: #2a2a2a; }
+    button:disabled { opacity: 0.4; cursor: default; }
+    button.primary { background: #1d4ed8; border-color: #1d4ed8; color: #fff; }
+    button.primary:hover:not(:disabled) { background: #2563eb; }
+
+    .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; height: calc(100vh - 57px); }
+    @media (max-width: 700px) { .layout { grid-template-columns: 1fr; } }
+
+    .panel { display: flex; flex-direction: column; border-right: 1px solid var(--border); overflow: hidden; }
+    .panel:last-child { border-right: none; }
+    .panel-header { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-shrink: 0; }
+    .panel-title { font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .panel-body { flex: 1; overflow-y: auto; padding: 1rem; }
+
+    /* Status pill */
+    .pill { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.2rem 0.55rem; border-radius: 99px; border: 1px solid; }
+    .pill.green { color: var(--green); border-color: #14532d; background: #052e16; }
+    .pill.red   { color: var(--red);   border-color: #7f1d1d; background: #2d0707; }
+    .pill.grey  { color: var(--muted); border-color: var(--border); }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    /* Capture section */
+    .capture-wrap { display: flex; flex-direction: column; gap: 1rem; }
+    .capture-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .meta-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; }
+    .meta-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.25rem; }
+    .meta-value { font-size: 1.1rem; font-weight: 600; font-family: monospace; }
+    .meta-value.green  { color: var(--green); }
+    .meta-value.red    { color: var(--red); }
+    .meta-value.yellow { color: var(--yellow); }
+    .meta-value.muted  { color: var(--muted); }
+
+    .photo-result { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: none; }
+    .photo-result img { width: 100%; display: block; }
+    .photo-result-bar { padding: 0.5rem 0.75rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; border-top: 1px solid var(--border); }
+    .photo-result-bar span { font-size: 0.7rem; color: var(--muted); }
+
+    /* Log */
+    .log { display: flex; flex-direction: column; gap: 0.35rem; }
+    .log-entry { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .log-entry-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; cursor: pointer; }
+    .log-entry-header:hover { background: #222; }
+    .method { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.04em; padding: 0.1rem 0.4rem; border-radius: 4px; background: #1e3a5f; color: var(--blue); }
+    .method.post { background: #1a3320; color: var(--green); }
+    .log-path { font-family: monospace; font-size: 0.8rem; flex: 1; }
+    .log-status { font-size: 0.75rem; font-weight: 600; font-family: monospace; }
+    .log-status.s2 { color: var(--green); }
+    .log-status.s5 { color: var(--red); }
+    .log-status.s4 { color: var(--yellow); }
+    .log-ms { font-size: 0.7rem; color: var(--muted); }
+    .log-body { padding: 0.5rem 0.75rem; border-top: 1px solid var(--border); font-family: monospace; font-size: 0.75rem; white-space: pre-wrap; word-break: break-all; color: #aaa; display: none; max-height: 200px; overflow-y: auto; }
+    .log-body.open { display: block; }
+    .log-ts { font-size: 0.65rem; color: var(--muted); }
+
+    /* Photos grid */
+    .photos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.5rem; }
+    .thumb { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; cursor: pointer; }
+    .thumb img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+    .thumb:hover img { opacity: 0.8; }
+    .thumb-label { font-size: 0.55rem; color: var(--muted); padding: 4px 5px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .empty-state { color: var(--muted); font-size: 0.8rem; padding: 2rem 0; text-align: center; }
+
+    .run-all-result { margin-top: 0.75rem; padding: 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-family: monospace; font-size: 0.75rem; line-height: 1.8; display: none; }
+    .t-pass { color: var(--green); }
+    .t-fail { color: var(--red); }
+    .t-skip { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📷 Remote Camera Test Client</h1>
+  <div class="url-row">
+    <input type="text" id="url" value="http://localhost:3000" placeholder="http://192.168.1.x:3000">
+    <button onclick="connect()">Connect</button>
+  </div>
+  <div id="server-pill" class="pill grey"><span class="dot"></span> Unknown</div>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT: Capture + Log -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Capture</span>
+      <div style="display:flex;gap:0.4rem">
+        <button class="primary" id="capture-btn" onclick="doCapture()">POST /api/capture</button>
+        <button onclick="runAll()">Run all tests</button>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="capture-wrap">
+
+        <div class="capture-meta">
+          <div class="meta-card">
+            <div class="meta-label">Status</div>
+            <div class="meta-value muted" id="cap-status">—</div>
+          </div>
+          <div class="meta-card">
+            <div class="meta-label">Response time</div>
+            <div class="meta-value muted" id="cap-ms">—</div>
+          </div>
+          <div class="meta-card">
+            <div class="meta-label">Content-Type</div>
+            <div class="meta-value muted" id="cap-ct" style="font-size:0.8rem">—</div>
+          </div>
+          <div class="meta-card">
+            <div class="meta-label">Size</div>
+            <div class="meta-value muted" id="cap-size">—</div>
+          </div>
+        </div>
+
+        <div class="photo-result" id="photo-result">
+          <img id="photo-img" src="" alt="Captured photo">
+          <div class="photo-result-bar">
+            <span id="photo-label">—</span>
+            <a id="photo-dl" href="#" download="capture.jpg">
+              <button style="font-size:0.7rem;padding:0.2rem 0.6rem">Download</button>
+            </a>
+          </div>
+        </div>
+
+        <div class="run-all-result" id="run-all-result"></div>
+
+      </div>
+
+      <div style="margin-top:1.25rem">
+        <div class="panel-title" style="margin-bottom:0.5rem">Request log</div>
+        <div class="log" id="log"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Saved photos -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">Saved photos <span id="photo-count" style="color:var(--muted);font-weight:400"></span></span>
+      <button onclick="loadPhotos()">Refresh</button>
+    </div>
+    <div class="panel-body">
+      <div id="photos-grid" class="photos-grid">
+        <div class="empty-state">Press "Connect" to load photos</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let base = 'http://localhost:3000';
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+
+  function $id(id) { return document.getElementById(id); }
+
+  function addLog(method, path, status, ms, bodyText) {
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    const cls = String(status)[0] === '2' ? 's2' : String(status)[0] === '5' ? 's5' : 's4';
+    const mCls = method === 'POST' ? 'method post' : 'method';
+    const ts = new Date().toLocaleTimeString();
+    entry.innerHTML = `
+      <div class="log-entry-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="${mCls}">${method}</span>
+        <span class="log-path">${path}</span>
+        <span class="log-status ${cls}">${status}</span>
+        <span class="log-ms">${ms}ms</span>
+        <span class="log-ts">${ts}</span>
+      </div>
+      <div class="log-body">${escHtml(bodyText)}</div>`;
+    $id('log').prepend(entry);
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function setPill(text, colour) {
+    const el = $id('server-pill');
+    el.className = `pill ${colour}`;
+    el.innerHTML = `<span class="dot"></span> ${text}`;
+  }
+
+  function setMeta(status, ms, ct, size) {
+    const sEl = $id('cap-status');
+    sEl.textContent = status;
+    sEl.className = 'meta-value ' + (String(status)[0] === '2' ? 'green' : String(status)[0] >= '5' ? 'red' : 'yellow');
+    $id('cap-ms').textContent = ms != null ? ms + ' ms' : '—';
+    $id('cap-ms').className = 'meta-value ' + (ms < 2000 ? 'green' : ms < 8000 ? 'yellow' : 'red');
+    $id('cap-ct').textContent = ct || '—';
+    $id('cap-size').textContent = size || '—';
+  }
+
+  // ── Connect / check server ────────────────────────────────────────────────
+
+  async function connect() {
+    base = $id('url').value.replace(/\/$/, '');
+    setPill('Checking…', 'grey');
+    try {
+      const r = await fetch(base + '/api/photos');
+      if (r.ok) {
+        setPill('Online', 'green');
+        loadPhotos();
+      } else {
+        setPill('Error ' + r.status, 'red');
+      }
+      addLog('GET', '/api/photos', r.status, 0, await r.text());
+    } catch {
+      setPill('Unreachable', 'red');
+      addLog('GET', '/api/photos', 'ERR', 0, 'Could not connect to ' + base);
+    }
+  }
+
+  // ── Capture ───────────────────────────────────────────────────────────────
+
+  async function doCapture() {
+    const btn = $id('capture-btn');
+    btn.disabled = true;
+    btn.textContent = 'Waiting…';
+    $id('photo-result').style.display = 'none';
+    setMeta('…', null, '—', '—');
+
+    const t = Date.now();
+    let res;
+    try {
+      res = await fetch(base + '/api/capture', {
+        method: 'POST',
+        signal: AbortSignal.timeout(35_000),
+      });
+    } catch (e) {
+      const ms = Date.now() - t;
+      setMeta('ABORT', ms, '—', '—');
+      addLog('POST', '/api/capture', 'ABORT', ms, e.message);
+      btn.disabled = false;
+      btn.textContent = 'POST /api/capture';
+      return;
+    }
+
+    const ms = Date.now() - t;
+    const ct = res.headers.get('content-type') ?? '';
+
+    if (res.ok && ct.startsWith('image')) {
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      const kb   = (blob.size / 1024).toFixed(1) + ' KB';
+      setMeta(res.status, ms, ct, kb);
+      $id('photo-img').src = url;
+      $id('photo-dl').href = url;
+      $id('photo-label').textContent = kb + ' · ' + ms + 'ms';
+      $id('photo-result').style.display = 'block';
+      addLog('POST', '/api/capture', res.status, ms, `image/jpeg  ${kb}`);
+      loadPhotos();
+    } else {
+      const text = await res.text();
+      setMeta(res.status, ms, ct, '—');
+      addLog('POST', '/api/capture', res.status, ms, text);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'POST /api/capture';
+  }
+
+  // ── Photos list ───────────────────────────────────────────────────────────
+
+  async function loadPhotos() {
+    const t = Date.now();
+    let photos = [];
+    try {
+      const r = await fetch(base + '/api/photos');
+      photos = await r.json();
+      addLog('GET', '/api/photos', r.status, Date.now() - t, JSON.stringify(photos.slice(0, 3), null, 2) + (photos.length > 3 ? '\n…' : ''));
+    } catch (e) {
+      addLog('GET', '/api/photos', 'ERR', Date.now() - t, e.message);
+      return;
+    }
+
+    $id('photo-count').textContent = `(${photos.length})`;
+    const grid = $id('photos-grid');
+    if (!photos.length) {
+      grid.innerHTML = '<div class="empty-state">No photos saved yet</div>';
+      return;
+    }
+    grid.innerHTML = photos.slice(0, 60).map(p => `
+      <div class="thumb" onclick="window.open('${base}${p.url}')">
+        <img src="${base}${p.url}" loading="lazy" alt="">
+        <div class="thumb-label">${p.filename.replace('photo-','').replace('.jpg','')}</div>
+      </div>`).join('');
+  }
+
+  // ── Run all tests ─────────────────────────────────────────────────────────
+
+  async function runAll() {
+    const out = $id('run-all-result');
+    out.style.display = 'block';
+    out.innerHTML = 'Running…';
+
+    const results = [];
+
+    async function test(name, fn) {
+      try {
+        const msg = await fn();
+        results.push({ name, pass: true, msg });
+      } catch (e) {
+        results.push({ name, pass: false, msg: e.message });
+      }
+    }
+
+    await test('Server reachable', async () => {
+      const r = await fetch(base + '/api/photos');
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return 'OK';
+    });
+
+    await test('GET /api/photos returns array', async () => {
+      const r = await fetch(base + '/api/photos');
+      const j = await r.json();
+      if (!Array.isArray(j)) throw new Error('not an array');
+      return `${j.length} photo(s)`;
+    });
+
+    await test('CORS header present', async () => {
+      const r = await fetch(base + '/api/photos');
+      const v = r.headers.get('access-control-allow-origin');
+      if (v !== '*') throw new Error(`got: ${v}`);
+      return 'Access-Control-Allow-Origin: *';
+    });
+
+    await test('POST /api/capture returns 503 when no device', async () => {
+      const r = await fetch(base + '/api/capture', { method: 'POST', signal: AbortSignal.timeout(5000) });
+      if (r.status === 200) return 'Device connected — got photo instead';
+      if (r.status === 503) return '503 as expected';
+      if (r.status === 504) return '504 timeout (device connected but slow)';
+      throw new Error(`unexpected ${r.status}`);
+    });
+
+    await test('GET /photos/:file serves JPEG', async () => {
+      const r  = await fetch(base + '/api/photos');
+      const ps = await r.json();
+      if (!ps.length) return 'skip — no photos saved';
+      const r2 = await fetch(base + ps[0].url);
+      const ct = r2.headers.get('content-type') ?? '';
+      if (!ct.startsWith('image/jpeg')) throw new Error(`content-type: ${ct}`);
+      return ct;
+    });
+
+    out.innerHTML = results.map(r =>
+      `<div class="${r.pass ? 't-pass' : 't-fail'}">${r.pass ? '✓' : '✗'} ${r.name}  <span style="opacity:0.5">${r.msg}</span></div>`
+    ).join('') + `\n<div style="margin-top:0.5rem;color:var(--muted)">${results.filter(r=>r.pass).length}/${results.length} passed</div>`;
+
+    addLog('TEST', 'Run all', results.filter(r=>r.pass).length + '/' + results.length, 0, results.map(r=>(r.pass?'✓':'✗')+' '+r.name).join('\n'));
+  }
+
+  // ── Live updates via SSE ──────────────────────────────────────────────────
+  let es = null;
+
+  function startSSE() {
+    if (es) es.close();
+    es = new EventSource(base + '/api/events');
+    es.addEventListener('photo', (e) => {
+      const p = JSON.parse(e.data);
+      addLog('SSE', '/api/events → photo', '—', 0, p.filename);
+      loadPhotos();
+    });
+    es.addEventListener('error', () => {
+      // Browser will auto-reconnect; nothing to do
+    });
+  }
+
+  // Patch connect() to also start SSE
+  const _connect = connect;
+  connect = async function () {
+    await _connect();
+    startSSE();
+  };
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  const sp = new URLSearchParams(location.search);
+  if (sp.get('server')) {
+    $id('url').value = sp.get('server');
+    connect();
+  }
+</script>
+</body>
+</html>

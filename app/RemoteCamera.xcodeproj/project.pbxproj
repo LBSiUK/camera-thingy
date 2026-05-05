@@ -1,0 +1,328 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0EAB0EE4E065BF2318B4F45F /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CB400B0E774F5BBB02C83BA /* CameraManager.swift */; };
+		2E9AD7352A33A3FCFEE39A9D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CAB8413E77369359FA7FD37 /* SettingsView.swift */; };
+		7D8BF40450809FC2B7791889 /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC31989C84E52BFFE0C1FEC /* CameraPreviewView.swift */; };
+		9EE4190FEA201F14B6511324 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01E5783E88E1BDAB57CA6E4 /* AppState.swift */; };
+		C3D26235F034C475DEB2041B /* RemoteCameraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5AC0801929FAF3E4F3B380D /* RemoteCameraApp.swift */; };
+		EED520CBDD513DB2C62C6C41 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CD56C77BFCAC0309B23F15 /* ContentView.swift */; };
+		F4F185BFF94069B4EF55290F /* NetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DFD5B989576F00C9BA1A421 /* NetworkClient.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0DFD5B989576F00C9BA1A421 /* NetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClient.swift; sourceTree = "<group>"; };
+		28CD56C77BFCAC0309B23F15 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		3CAB8413E77369359FA7FD37 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		5CB400B0E774F5BBB02C83BA /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
+		5FC31989C84E52BFFE0C1FEC /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
+		84A1AE66769BC1B64015CA4F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B01E5783E88E1BDAB57CA6E4 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		E5AC0801929FAF3E4F3B380D /* RemoteCameraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteCameraApp.swift; sourceTree = "<group>"; };
+		E9F2A2089CD9868D14A147B8 /* RemoteCamera.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = RemoteCamera.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1387DD6D901455AACBE2172B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5FC31989C84E52BFFE0C1FEC /* CameraPreviewView.swift */,
+				28CD56C77BFCAC0309B23F15 /* ContentView.swift */,
+				3CAB8413E77369359FA7FD37 /* SettingsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		51172510C1FC65F2726E914B /* RemoteCamera */ = {
+			isa = PBXGroup;
+			children = (
+				B01E5783E88E1BDAB57CA6E4 /* AppState.swift */,
+				5CB400B0E774F5BBB02C83BA /* CameraManager.swift */,
+				84A1AE66769BC1B64015CA4F /* Info.plist */,
+				0DFD5B989576F00C9BA1A421 /* NetworkClient.swift */,
+				E5AC0801929FAF3E4F3B380D /* RemoteCameraApp.swift */,
+				1387DD6D901455AACBE2172B /* Views */,
+			);
+			path = RemoteCamera;
+			sourceTree = "<group>";
+		};
+		AED21D331EB2E2A5BC0BA7FB = {
+			isa = PBXGroup;
+			children = (
+				51172510C1FC65F2726E914B /* RemoteCamera */,
+				F20B1DD25F3F38BE6DECFB8E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F20B1DD25F3F38BE6DECFB8E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E9F2A2089CD9868D14A147B8 /* RemoteCamera.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C820D070F58F0063E35E265E /* RemoteCamera */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4742383BDAE77FF5E9A5FC41 /* Build configuration list for PBXNativeTarget "RemoteCamera" */;
+			buildPhases = (
+				CED65B5EBA4751B958568915 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RemoteCamera;
+			packageProductDependencies = (
+			);
+			productName = RemoteCamera;
+			productReference = E9F2A2089CD9868D14A147B8 /* RemoteCamera.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F6E0A0AD69EED127A0BAE61D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					C820D070F58F0063E35E265E = {
+						DevelopmentTeam = C283APJCB8;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 48E1F5D8A29FA35A124259C7 /* Build configuration list for PBXProject "RemoteCamera" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = AED21D331EB2E2A5BC0BA7FB;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F20B1DD25F3F38BE6DECFB8E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C820D070F58F0063E35E265E /* RemoteCamera */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CED65B5EBA4751B958568915 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9EE4190FEA201F14B6511324 /* AppState.swift in Sources */,
+				0EAB0EE4E065BF2318B4F45F /* CameraManager.swift in Sources */,
+				7D8BF40450809FC2B7791889 /* CameraPreviewView.swift in Sources */,
+				EED520CBDD513DB2C62C6C41 /* ContentView.swift in Sources */,
+				F4F185BFF94069B4EF55290F /* NetworkClient.swift in Sources */,
+				C3D26235F034C475DEB2041B /* RemoteCameraApp.swift in Sources */,
+				2E9AD7352A33A3FCFEE39A9D /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		00A29F988A3F4597D64E1CFA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C283APJCB8;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = RemoteCamera/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.leonb.remotecamera;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		0165DE878247C93F34669003 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		644195DB01C6DDDA56FAD562 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = C283APJCB8;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = RemoteCamera/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.leonb.remotecamera;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		AABBA74BDD9653CDB40F118E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4742383BDAE77FF5E9A5FC41 /* Build configuration list for PBXNativeTarget "RemoteCamera" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00A29F988A3F4597D64E1CFA /* Debug */,
+				644195DB01C6DDDA56FAD562 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		48E1F5D8A29FA35A124259C7 /* Build configuration list for PBXProject "RemoteCamera" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AABBA74BDD9653CDB40F118E /* Debug */,
+				0165DE878247C93F34669003 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F6E0A0AD69EED127A0BAE61D /* Project object */;
+}
