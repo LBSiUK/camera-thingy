@@ -1,0 +1,5 @@
+{
+  "model": "gemini-2.5-flash",
+  "system_prompt": "You are a helpful assistant. Describe what you see in the image in detail.",
+  "user_prompt": "What is in this photo?"
+}

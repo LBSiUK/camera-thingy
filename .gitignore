@@ -1,6 +1,14 @@
 # Node
 server/node_modules/
 server/photos/
+node_modules/
+web-server/node_modules/
+
+# Binaries
+cloudflared.exe
+
+# Secrets
+.env
 
 # iOS build artifacts
 app/build/

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Camera Stream</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100dvh;
+    }
+    #video {
+      width: 100%;
+      max-width: 640px;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      background: #111;
+      display: block;
+    }
+    #controls {
+      width: 100%;
+      max-width: 640px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    #status {
+      text-align: center;
+      font-size: 14px;
+      color: #aaa;
+      min-height: 20px;
+    }
+    #status.active { color: #4caf50; }
+    #status.error { color: #f44336; }
+    #btn-start {
+      background: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #btn-start:disabled {
+      background: #333;
+      color: #666;
+    }
+    #btn-flip {
+      background: #1e1e1e;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 15px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #countdown {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+    }
+    #canvas { display: none; }
+    #last-capture {
+      width: 100%;
+      max-width: 640px;
+      padding: 0 16px 16px;
+    }
+    #last-capture img {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #222;
+      display: none;
+    }
+    #last-capture-label {
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 6px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <video id="video" autoplay playsinline muted></video>
+  <canvas id="canvas"></canvas>
+
+  <div id="controls">
+    <div id="status">Tap Start to begin streaming</div>
+    <button id="btn-start">Start Streaming</button>
+    <button id="btn-flip">Flip Camera</button>
+    <div id="countdown"></div>
+  </div>
+
+  <div id="last-capture">
+    <div id="last-capture-label">Last capture sent:</div>
+    <img id="preview" alt="Last captured frame">
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const btnStart = document.getElementById('btn-start');
+    const btnFlip = document.getElementById('btn-flip');
+    const statusEl = document.getElementById('status');
+    const countdownEl = document.getElementById('countdown');
+    const preview = document.getElementById('preview');
+    const lastCaptureLabel = document.getElementById('last-capture-label');
+
+    const INTERVAL_MS = 15000;
+
+    let stream = null;
+    let facingMode = 'environment';
+    let captureInterval = null;
+    let nextCapture = null;
+    let countdownTimer = null;
+    let streaming = false;
+
+    const socket = io();
+
+    socket.on('connect', () => setStatus('Connected to server', 'active'));
+    socket.on('disconnect', () => setStatus('Disconnected', 'error'));
+
+    function setStatus(msg, cls = '') {
+      statusEl.textContent = msg;
+      statusEl.className = cls;
+    }
+
+    async function startCamera() {
+      try {
+        if (stream) stream.getTracks().forEach(t => t.stop());
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false,
+        });
+        video.srcObject = stream;
+        return true;
+      } catch (err) {
+        setStatus('Camera error: ' + err.message, 'error');
+        return false;
+      }
+    }
+
+    function captureFrame() {
+      if (!stream || !video.videoWidth) return;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      socket.emit('frame', dataUrl);
+      preview.src = dataUrl;
+      preview.style.display = 'block';
+      lastCaptureLabel.style.display = 'block';
+      setStatus('Frame sent at ' + new Date().toLocaleTimeString(), 'active');
+    }
+
+    function startCountdown() {
+      nextCapture = Date.now() + INTERVAL_MS;
+      clearInterval(countdownTimer);
+      countdownTimer = setInterval(() => {
+        const remaining = Math.ceil((nextCapture - Date.now()) / 1000);
+        if (remaining > 0) {
+          countdownEl.textContent = `Next capture in ${remaining}s`;
+        }
+      }, 500);
+    }
+
+    btnStart.addEventListener('click', async () => {
+      if (streaming) {
+        // Stop
+        clearInterval(captureInterval);
+        clearInterval(countdownTimer);
+        if (stream) stream.getTracks().forEach(t => t.stop());
+        stream = null;
+        streaming = false;
+        btnStart.textContent = 'Start Streaming';
+        btnStart.style.background = '#4caf50';
+        countdownEl.textContent = '';
+        setStatus('Stopped');
+        return;
+      }
+
+      btnStart.disabled = true;
+      setStatus('Starting camera...');
+      const ok = await startCamera();
+      btnStart.disabled = false;
+
+      if (!ok) return;
+
+      streaming = true;
+      btnStart.textContent = 'Stop Streaming';
+      btnStart.style.background = '#f44336';
+
+      // Capture immediately, then every 15s
+      captureFrame();
+      startCountdown();
+
+      captureInterval = setInterval(() => {
+        captureFrame();
+        startCountdown();
+      }, INTERVAL_MS);
+    });
+
+    btnFlip.addEventListener('click', async () => {
+      facingMode = facingMode === 'environment' ? 'user' : 'environment';
+      if (streaming) await startCamera();
+    });
+  </script>
+</body>
+</html>
