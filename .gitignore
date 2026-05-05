@@ -11,6 +11,9 @@ web-server/node_modules/
 # Binaries
 cloudflared.exe
 
+# Runtime generated
+web-server/img/
+
 # Secrets
 .env
 
