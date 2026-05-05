@@ -1,3 +1,7 @@
+# Python
+__pycache__/
+*.pyc
+
 # Node
 server/node_modules/
 server/photos/
