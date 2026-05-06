@@ -31,6 +31,8 @@ def run_once():
     print(f"\n{result}\n")
     print("-" * 60)
 
+    requests.post(f"{SERVER_URL}/api/analysis", json={"text": result}, timeout=10)
+
 
 while True:
     try:
