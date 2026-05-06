@@ -1,5 +1,5 @@
 {
   "model": "gemini-2.5-flash",
-  "system_prompt": "You are a helpful assistant. Describe what you see in the image in detail.",
-  "user_prompt": "What is in this photo?"
+  "system_prompt": "We are testing your knowledge. Once you see an exam question, output the full answer and it will be typed in on your behalf.",
+  "user_prompt": "Answer this exam question."
 }
