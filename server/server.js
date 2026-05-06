@@ -5,12 +5,33 @@ const http = require('http');
 const { randomUUID } = require('crypto');
 const path = require('path');
 const fs = require('fs');
+const { GoogleGenAI } = require('@google/genai');
 
 const PORT = process.env.PORT || 3000;
 const CAPTURE_TIMEOUT_MS = 30_000;
 const PHOTOS_DIR = path.join(__dirname, 'photos');
 const LIVE_IMG = path.join(__dirname, '..', 'web-server', 'img', 'img.jpeg');
 const FRONTEND_PIN = process.env.FRONTEND_PIN || null;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || null;
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+const SYSTEM_PROMPT = process.env.SYSTEM_PROMPT || 'You are a helpful assistant. Describe what you see in the image in detail.';
+const USER_PROMPT = process.env.USER_PROMPT || 'What is in this photo?';
+
+const gemini = GEMINI_API_KEY ? new GoogleGenAI({ apiKey: GEMINI_API_KEY }) : null;
+
+async function analyzeImage(imagePath) {
+  if (!gemini) return null;
+  const imageData = fs.readFileSync(imagePath).toString('base64');
+  const response = await gemini.models.generateContent({
+    model: GEMINI_MODEL,
+    contents: [{ role: 'user', parts: [
+      { text: USER_PROMPT },
+      { inlineData: { mimeType: 'image/jpeg', data: imageData } },
+    ]}],
+    config: { systemInstruction: SYSTEM_PROMPT },
+  });
+  return response.text;
+}
 
 if (!fs.existsSync(PHOTOS_DIR)) fs.mkdirSync(PHOTOS_DIR, { recursive: true });
 fs.mkdirSync(path.dirname(LIVE_IMG), { recursive: true });
@@ -170,8 +191,10 @@ app.post('/api/photo', upload.single('photo'), (req, res) => {
 
   fs.copyFileSync(req.file.path, LIVE_IMG);
 
+  const timestamp = new Date().toISOString();
+
   // push photo to frontend immediately
-  sseEmit('photo', { url: `/photos/${filename}`, timestamp: new Date().toISOString() });
+  sseEmit('photo', { url: `/photos/${filename}`, timestamp });
 
   const captureId = req.body?.captureId;
   const p = captureId && pending.get(captureId);
@@ -182,6 +205,14 @@ app.post('/api/photo', upload.single('photo'), (req, res) => {
   }
 
   res.json({ ok: true, filename });
+
+  // run Gemini analysis in background
+  analyzeImage(req.file.path).then(text => {
+    if (!text) return;
+    latestAnalysis = { text, imageUrl: `/photos/${filename}`, timestamp };
+    console.log(`[Analysis] Done (${text.length} chars)`);
+    sseEmit('analysis', latestAnalysis);
+  }).catch(err => console.error('[Analysis] Error:', err.message));
 });
 
 const PIN_HTML = /* html */`<!DOCTYPE html>
