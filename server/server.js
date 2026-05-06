@@ -163,6 +163,11 @@ app.post('/api/photo', upload.single('photo'), (req, res) => {
   const filename = req.file.filename;
   console.log(`[Photo] Saved ${filename}  (${Math.round(req.file.size / 1024)} KB)`);
 
+  // delete all previous photos, keep only this one
+  fs.readdirSync(PHOTOS_DIR)
+    .filter(f => f.endsWith('.jpg') && f !== filename)
+    .forEach(f => fs.unlink(path.join(PHOTOS_DIR, f), () => {}));
+
   fs.copyFileSync(req.file.path, LIVE_IMG);
 
   // push photo to frontend immediately
